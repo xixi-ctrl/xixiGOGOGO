@@ -1,0 +1,15 @@
+source("R/common.R")
+bootstrap()
+obj <- load_checkpoint("01_import")
+qc <- obj[[]]
+qc$keep <- with(qc, nFeature_RNA > config$min_features & nFeature_RNA < config$max_features &
+                  nCount_RNA < config$max_counts & percent.mt <= config$max_percent_mt)
+write.csv(qc, "results/tables/qc_cells.csv", row.names = TRUE)
+write.csv(table(qc$sample_id, qc$keep), "results/tables/qc_retention.csv", row.names = FALSE)
+pdf("results/figures/qc_before_filtering.pdf", width = 12, height = 5)
+print(VlnPlot(obj, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), group.by = "sample_id", pt.size = 0))
+dev.off()
+if (!any(qc$keep)) stop("QC 后没有细胞。")
+if (!all(unique(qc$sample_id) %in% qc$sample_id[qc$keep])) stop("QC 导致整份样本丢失，请检查。")
+obj <- subset(obj, cells = rownames(qc)[qc$keep])
+checkpoint(obj, "02_qc")

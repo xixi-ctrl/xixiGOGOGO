@@ -1,0 +1,12 @@
+source("R/common.R")
+bootstrap()
+obj <- load_checkpoint("03_preprocess")
+reduction <- if (config$integration == "harmony") "harmony" else "pca"
+dims <- seq_len(min(config$npcs, ncol(Embeddings(obj, reduction))))
+obj <- FindNeighbors(obj, reduction = reduction, dims = dims)
+obj <- FindClusters(obj, resolution = config$resolution, random.seed = config$seed)
+obj <- RunUMAP(obj, reduction = reduction, dims = dims, seed.use = config$seed)
+pdf("results/figures/umap.pdf", width = 10, height = 6)
+for (col in c("seurat_clusters", "sample_id", "condition", "batch")) print(DimPlot(obj, group.by = col))
+dev.off()
+checkpoint(obj, "04_cluster")

@@ -1,0 +1,25 @@
+# Data and generated outputs
+/data/raw/*
+/data/interim/*
+/data/processed/*
+/results/figures/*
+/results/tables/*
+/results/logs/*
+!/data/**/.gitkeep
+!/results/**/.gitkeep
+config/samples.csv
+config/annotations.csv
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+renv/library/
+renv/staging/
+renv/cache/
+*.Rds
+*.rds
+*.h5
+*.h5ad
+*.h5seurat
+*.loom
+.DS_Store
